@@ -6,33 +6,46 @@
 #    By: ayusa <ayusa@student.42tokyo.jp>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/13 14:16:49 by ayusa             #+#    #+#              #
-#    Updated: 2025/05/13 14:19:12 by ayusa            ###   ########.fr        #
+#    Updated: 2025/05/14 17:51:27 by ayusa            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = get_next_line.a
 
-SRCS = get_next_line.c get_next_line_utils.c
-OBJS = get_next_line_bonus.c get_next_line_utils_bonus.c
+CC      = cc
+CFLAGS  = -Wall -Wextra -Werror
+AR      = ar rcs
+RM      = rm -f
 
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
+MANDAT_SRCS = get_next_line.c get_next_line_utils.c
+BONUS_SRCS = get_next_line_bonus.c get_next_line_utils_bonus.c
 
-$(NAME): $(OBJECTS)
-	$(AR) -r $@ $?
+MANDAT_OBJS = $(MANDAT_SRCS:.c=.o)
+BONUS_OBJS  = $(BONUS_SRCS:.c=.o)
 
-bonus: $(OBJECTS) $(BOBJECTS)
-	$(AR) -r $(NAME) $?
+OBJS = $(MANDAT_OBJS)
+
+ifdef WITH_BONUS
+OBJS += $(BONUS_OBJS)
+endif
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $?
+	$(CC) $(CFLAGS) -c $< -o $@
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	$(AR) $(NAME) $(OBJS)
+
+bonus:
+	@make WITH_BONUS=1
 
 clean:
-	rm -f $(OBJECTS) $(BOBJECTS)
+	$(RM) $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
 
-.PHONY: all bonus clean fclean re
+.PHONY: all clean fclean re bonus
